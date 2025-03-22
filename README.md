@@ -6,7 +6,8 @@ Instrucciones para desarrollo:
 2. Ejecutar comando `git pull` para actualizar el proyecto
 3. Ejecutar comando `venv\Scripts\activate` para entrar al entorno virtual
 4. Ejecutar comando `pip install -r requirements.txt` para instalar librerias
-5. Ejecutar servidor con el comando:
+5. Crear el archivo `.env` en base al archivo `.env.template` 
+6. Ejecutar servidor con el comando:
 ```
 python manage.py runserver
 ```
