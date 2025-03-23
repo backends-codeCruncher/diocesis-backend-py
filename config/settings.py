@@ -25,8 +25,13 @@ INSTALLED_APPS = [
     'rest_framework',
     'auth_token',
     'cloudinary',
-    'cloudinary_storage'
+    'cloudinary_storage',
+    'corsheaders',
+    'core',
+    'usuarios',
 ]
+
+AUTH_USER_MODEL = 'usuarios.Usuario'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -44,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -127,6 +133,7 @@ CLOUDINARY_STORAGE = {
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
+CORS_ALLOW_ALL_ORIGINS = True
 
 from datetime import timedelta
 
