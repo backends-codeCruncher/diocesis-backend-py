@@ -38,4 +38,5 @@ Si se instala una nuneva librería esta debe ser agregada en el archivo
 requirements.txt
 ```
 
+NO BORRAR .ENV.TEMPLATE
 
