@@ -23,11 +23,16 @@ class CustomPageNumberPagination(PageNumberPagination):
 class UsuarioAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
-    def get(self, request):
+    def get(self, request, pk=None):
+        if pk:
+            usuario = get_object_or_404(Usuario, pk=pk)
+            serializer = UsuarioSerializer(usuario)
+            return Response(serializer.data)
+
         if not es_admin_o_super(request.user):
             return Response({"detail": "No tienes permisos."}, status=403)
 
-        queryset = Usuario.objects.all().order_by('username')
+        queryset = Usuario.objects.exclude(id=request.user.id).order_by('username')
         username = request.query_params.get('username')
         is_active = request.query_params.get('isActive')
 
@@ -220,5 +225,4 @@ class CrearUsuariosPorCsvView(APIView):
             "creados": usuarios_creados,
             "errores": errores
         }, status=200)
-    
     
