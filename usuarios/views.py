@@ -17,7 +17,8 @@ def es_admin_o_super(user):
 # 🔹 Paginación común
 class CustomPageNumberPagination(PageNumberPagination):
     page_size = 10
-
+    page_size_query_param = 'page_size'
+    max_page_size = 100
 
 # 🔹 CRUD general
 class UsuarioAPIView(APIView):
