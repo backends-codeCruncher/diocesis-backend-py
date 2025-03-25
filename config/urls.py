@@ -21,4 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/token/', include('auth_token.urls')),
     path('api/users/', include('usuarios.urls')),
+    path('api/carrusel/', include('carrusel.urls')),
 ]

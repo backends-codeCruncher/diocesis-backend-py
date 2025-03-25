@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'core',
     'usuarios',
+    'carrusel',
 ]
 
 AUTH_USER_MODEL = 'usuarios.Usuario'
