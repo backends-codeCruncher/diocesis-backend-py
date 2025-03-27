@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions, status
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.shortcuts import get_object_or_404
 from django.conf import settings
@@ -18,9 +19,15 @@ class CarruselView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser]
 
+    def get_permissions(self):
+        # 👇 Permite el acceso libre al GET
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsAuthenticated()]  # POST, PUT, DELETE requieren autenticación
+
     def get(self, request):
         """
-        Lista todos los elementos del carrusel
+        Lista todos los elementos del carrusel (acceso público)
         """
         carruseles = Carrusel.objects.all().order_by('-createdAt')
         serializer = CarruselSerializer(carruseles, many=True)
