@@ -39,9 +39,9 @@ class CarruselView(APIView):
         try:
             # ✅ Configurar Cloudinary antes de usarlo
             cloudinary.config(
-                cloud_name=settings.CLOUDINARY_STORAGE['cloud_name'],
-                api_key=settings.CLOUDINARY_STORAGE['api_key'],
-                api_secret=settings.CLOUDINARY_STORAGE['api_secret'],
+                cloud_name=settings.CLOUDINARY_STORAGE['CLOUD_NAME'],
+                api_key=settings.CLOUDINARY_STORAGE['API_KEY'],
+                api_secret=settings.CLOUDINARY_STORAGE['API_SECRET'],
                 secure=True
             )
 
@@ -112,3 +112,5 @@ class CarruselView(APIView):
         carrusel = get_object_or_404(Carrusel, pk=pk)
         carrusel.delete()
         return Response({"detail": "Elemento eliminado correctamente."}, status=204)
+    
+    
