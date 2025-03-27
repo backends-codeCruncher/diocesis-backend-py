@@ -3,10 +3,10 @@ from rest_framework.response import Response
 from rest_framework import permissions, status
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.shortcuts import get_object_or_404
+from django.conf import settings
 import cloudinary.uploader
-
-from .models import Carrusel
-from .serializers import CarruselSerializer
+from carrusel.models import Carrusel
+from carrusel.serializers import CarruselSerializer
 
 
 # Permiso personalizado
@@ -27,9 +27,6 @@ class CarruselView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        """
-        Crea un nuevo carrusel (imagen o video). Solo admin o super pueden usarlo.
-        """
         if not es_admin_o_super(request.user):
             return Response({"detail": "No tienes permisos para crear elementos del carrusel."}, status=403)
 
@@ -40,6 +37,14 @@ class CarruselView(APIView):
             return Response({"error": "Debes proporcionar un archivo en el campo 'url'."}, status=400)
 
         try:
+            # ✅ Configurar Cloudinary antes de usarlo
+            cloudinary.config(
+                cloud_name=settings.CLOUDINARY_STORAGE['cloud_name'],
+                api_key=settings.CLOUDINARY_STORAGE['api_key'],
+                api_secret=settings.CLOUDINARY_STORAGE['api_secret'],
+                secure=True
+            )
+
             folder = 'carrusel/imagenes' if is_image else 'carrusel/videos'
             resource_type = 'image' if is_image else 'video'
 
