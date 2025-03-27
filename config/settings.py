@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'core',
     'usuarios',
     'carrusel',
+    'padres',
 ]
 
 AUTH_USER_MODEL = 'usuarios.Usuario'

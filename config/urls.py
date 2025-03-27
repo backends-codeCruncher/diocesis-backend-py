@@ -22,4 +22,5 @@ urlpatterns = [
     path('api/token/', include('auth_token.urls')),
     path('api/users/', include('usuarios.urls')),
     path('api/carrusel/', include('carrusel.urls')),
+    path('api/padres/', include('padres.urls')),
 ]
