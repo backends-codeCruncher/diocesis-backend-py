@@ -23,4 +23,5 @@ urlpatterns = [
     path('api/users/', include('usuarios.urls')),
     path('api/carrusel/', include('carrusel.urls')),
     path('api/padres/', include('padres.urls')),
+    path('api/decanatos/', include('decanatos.urls')),
 ]
