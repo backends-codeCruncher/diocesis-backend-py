@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions, status
 from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
 from padres.models import Padre
 from padres.serializers import PadreSerializer
@@ -11,6 +11,12 @@ from padres.serializers import PadreSerializer
 class PadreView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser]
+
+    def get_permissions(self):
+        # 👇 Permite el acceso libre al GET
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsAuthenticated()]  # POST, PUT, DELETE requieren autenticación
 
     def get(self, request, pk=None):
         if pk:

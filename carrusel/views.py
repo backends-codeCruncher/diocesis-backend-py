@@ -25,11 +25,13 @@ class CarruselView(APIView):
             return [AllowAny()]
         return [IsAuthenticated()]  # POST, PUT, DELETE requieren autenticación
 
-    def get(self, request):
-        """
-        Lista todos los elementos del carrusel (acceso público)
-        """
-        carruseles = Carrusel.objects.all().order_by('-createdAt')
+    def get(self, request, pk=None):
+        if pk:
+            carrusel = get_object_or_404(Carrusel, pk=pk)
+            serializer = CarruselSerializer(carrusel)
+            return Response(serializer.data)
+
+        carruseles = Carrusel.objects.filter(isActive=True).order_by('-createdAt')
         serializer = CarruselSerializer(carruseles, many=True)
         return Response(serializer.data)
 
@@ -117,7 +119,27 @@ class CarruselView(APIView):
             return Response({"detail": "No tienes permisos para eliminar elementos del carrusel."}, status=403)
 
         carrusel = get_object_or_404(Carrusel, pk=pk)
-        carrusel.delete()
-        return Response({"detail": "Elemento eliminado correctamente."}, status=204)
+        carrusel.isActive = False  # 👉 eliminación lógica
+        carrusel.save()
+        return Response({"detail": "Elemento desactivado correctamente."}, status=204)
+    
+class HabilitarCarruselView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request, pk):
+        if not es_admin_o_super(request.user):
+            return Response({"detail": "No tienes permisos para habilitar carruseles."}, status=403)
+
+        carrusel = get_object_or_404(Carrusel, pk=pk)
+
+        if carrusel.isActive:
+            return Response({"detail": "Este carrusel ya está activo."}, status=400)
+
+        carrusel.isActive = True
+        carrusel.save()
+
+        return Response({"detail": "Carrusel habilitado correctamente."}, status=200)
+    
+    
     
     

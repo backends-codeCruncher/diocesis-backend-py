@@ -6,6 +6,7 @@ class Carrusel(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     url = models.URLField()  # Se guarda como URL (subido manualmente a Cloudinary)
     isImage = models.BooleanField(default=True)
+    isActive = models.BooleanField(default=True)
     createdAt = models.DateTimeField(auto_now_add=True)
     createdBy = models.ForeignKey(
         settings.AUTH_USER_MODEL,
