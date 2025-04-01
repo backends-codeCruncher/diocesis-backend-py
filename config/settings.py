@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'carrusel',
     'padres',
     'decanatos',
+    'colonias',
 ]
 
 AUTH_USER_MODEL = 'usuarios.Usuario'

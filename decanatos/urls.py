@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import DecanatoView, CargarDecanatosPorCSV, HabilitarDecanatoView
+from decanatos.views import DecanatoView, CargarDecanatosPorCSV, HabilitarDecanatoView
 
 urlpatterns = [
     path('', DecanatoView.as_view(), name='decanatos'),
