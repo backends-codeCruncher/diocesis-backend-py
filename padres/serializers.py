@@ -5,5 +5,5 @@ class PadreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Padre
         fields = '__all__'
-        read_only_fields = ['id', 'createdAt', 'updatedAt', 'deletedAt', 'updatedBy', 'deletedBy']
+        read_only_fields = ['id', 'isActive', 'createdAt', 'updatedAt', 'deletedAt', 'updatedBy', 'deletedBy']
 
