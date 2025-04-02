@@ -5,6 +5,7 @@ from rest_framework import permissions, status
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.decorators import api_view, permission_classes
 from django.shortcuts import get_object_or_404
 from padres.models import Padre
 from django.conf import settings
@@ -150,5 +151,4 @@ class HabilitarPadreView(APIView):
         padre.updatedBy = request.user
         padre.save()
         return Response({"detail": "Padre habilitado correctamente."}, status=status.HTTP_200_OK)
-    
     

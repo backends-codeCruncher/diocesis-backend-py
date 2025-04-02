@@ -5,6 +5,8 @@ from rest_framework import status, permissions
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.pagination import PageNumberPagination
 from django.shortcuts import get_object_or_404
+from django.conf import settings
+import cloudinary.uploader
 from documentos.models import Documento
 from documentos.serializers import DocumentoSerializer
 from cloudinary.uploader import upload
@@ -47,21 +49,36 @@ class DocumentoView(APIView):
 
     def post(self, request):
         if not es_admin_o_super(request.user):
-            return Response({"detail": "No autorizado."}, status=status.HTTP_403_FORBIDDEN)
+            return Response({"detail": "No autorizado."}, status=403)
 
         data = request.data.copy()
-
         document_file = request.FILES.get('document')
+
         if document_file:
-            resultado = upload(document_file, folder="documentos", resource_type="raw")
-            data['document'] = resultado.get('secure_url')
+            try:
+                cloudinary.config(
+                    cloud_name=settings.CLOUDINARY_STORAGE['CLOUD_NAME'],
+                    api_key=settings.CLOUDINARY_STORAGE['API_KEY'],
+                    api_secret=settings.CLOUDINARY_STORAGE['API_SECRET'],
+                    secure=True
+                )
+                resultado = upload(
+                    document_file,
+                    folder="documentos",
+                    resource_type="raw",
+                    use_filename=True,
+                    unique_filename=False
+                )
+                data['document'] = resultado.get('secure_url')
+            except Exception as e:
+                return Response({"error": str(e)}, status=400)
 
         serializer = DocumentoSerializer(data=data)
         if serializer.is_valid():
             serializer.save(createdBy=request.user, isActive=True)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=201)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=400)
 
     def put(self, request, pk):
         if not es_admin_o_super(request.user):
