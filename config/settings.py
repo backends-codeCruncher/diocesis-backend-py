@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'decanatos',
     'colonias',
     'parroquias',
+    'noticias',
 ]
 
 AUTH_USER_MODEL = 'usuarios.Usuario'
