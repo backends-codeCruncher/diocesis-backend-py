@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: backend-diocesis
+    env: python
+    plan: free
+    buildCommand: ""
+    startCommand: gunicorn config.wsgi:application
+    envVars:
+      - key: DJANGO_ENV
+        value: prod
