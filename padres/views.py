@@ -27,6 +27,11 @@ class PadreView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser]
 
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsAuthenticated()]
+    
     def get(self, request, pk=None):
         if pk:
             padre = get_object_or_404(Padre, pk=pk)

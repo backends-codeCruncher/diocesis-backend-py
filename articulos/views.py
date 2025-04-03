@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status, permissions
 from rest_framework.parsers import FormParser, JSONParser
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.shortcuts import get_object_or_404
 from articulos.models import Articulo
 from articulos.serializers import ArticuloSerializer
@@ -20,6 +21,11 @@ class ArticuloView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     parser_classes = [FormParser, JSONParser]
 
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsAuthenticated()]
+    
     def get(self, request, pk=None):
         if pk:
             articulo = get_object_or_404(Articulo, pk=pk)
