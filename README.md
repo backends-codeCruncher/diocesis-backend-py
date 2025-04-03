@@ -1,42 +1,119 @@
 # backend-diocesis
 
-Instrucciones para desarrollo:
+## 🧪 Instrucciones para desarrollo
 
-1. Ejecutar comando `git fetch` para revisar cambios pendinetes
-2. Ejecutar comando `git pull` para actualizar el proyecto
-3. Ejecutar comando `venv\Scripts\activate` para entrar al entorno virtual
-4. Ejecutar comando `pip install -r requirements.txt` para instalar librerias
-5. Crear el archivo `.env` en base al archivo `.env.template` 
-6. Ejecutar servidor con el comando:
-```
-python manage.py runserver
-```
+1. Ejecutar `git fetch` para revisar cambios pendientes  
+2. Ejecutar `git pull` para actualizar el proyecto
+3. Crear el entorno virtual con el comnando:
+    ```
+    python -m venv venv
+    ```
+4. Activar el entorno virtual:
 
-6. Ingresar a la siguiente dirección:
-```
-http://127.0.0.1:8000/
-```
+   ```
+   venv\Scripts\activate
+   ```
 
-Instrucciones para guardado de cambios:
+5. Instalar dependencias:
 
-1. Ejecutar comando ``git add .`` para seleccionar los archivos modificados
-2. Ejecutar comando ``git commmit -m "Mensaje"``
+   ```
+   pip install -r requirements.txt
+   ```
 
-Nomenclatura recomendada:
+6. Crear el archivo `.env.dev` dentro de la carpeta `config`, basado en `.env.template`  
+7. Ejecutar el servidor:
 
-- fix: para arreglar errores
-- update: para actualizar
-- create: para nuevos archivos o funcionalidades
-- delete: para borrado de archivos
+   ```
+   python manage.py runserver
+   ```
 
-EJEMPLO: fix - carga de archivos desde csv
+8. Ingresar a la aplicación:
 
-NOTA:
+   ```
+   http://127.0.0.1:8000/
+   ```
 
-Si se instala una nuneva librería esta debe ser agregada en el archivo
+---
+
+## 💾 Instrucciones para guardar cambios en Git
+
+1. Añadir los archivos modificados:
+
+   ```
+   git add .
+   ```
+
+2. Confirmar los cambios:
+
+   ```
+   git commit -m "Mensaje"
+   ```
+
+### 🏷️ Nomenclatura recomendada
+
+- `fix:` para arreglar errores
+- `update:` para actualizar funcionalidades
+- `create:` para nuevos archivos o funciones
+- `delete:` para eliminar archivos
+
+**Ejemplo:** `fix - carga de archivos desde csv`
+
+📌 Si se instala una nueva librería, recuerda actualizar:
+
 ```
 requirements.txt
 ```
+---
 
-NO BORRAR .ENV.TEMPLATE
+## 🚀 Instrucciones para producción
 
+1. Activar el entorno virtual:
+
+   ```
+   venv\Scripts\activate
+   ```
+
+2. Crear archivo de configuración:
+
+   ```
+   config/.env.prod
+   ```
+
+   Basado en `.env.template` con ajustes como:
+
+   - `DEBUG=False`
+   - Dominio válido en `ALLOWED_HOSTS`
+   - Claves reales de producción
+
+3. Establecer variable de entorno `DJANGO_ENV`:
+
+   - En **PowerShell**:
+
+     ```
+     $env:DJANGO_ENV = "prod"
+     ```
+
+   - En **CMD**:
+
+     ```
+     set DJANGO_ENV=prod
+     ```
+
+4. Aplicar migraciones y colectar archivos estáticos:
+
+   ```
+   python manage.py migrate
+   python manage.py collectstatic
+   ```
+
+5. Ejecutar el servidor:
+
+   ```
+   python manage.py runserver
+   ```
+
+   O configurar WSGI en producción según el hosting (por ejemplo, Hostinger).
+
+---
+
+✅ ¡Listo! Tu proyecto estará funcionando en modo desarrollo o producción según la variable `DJANGO_ENV`.
