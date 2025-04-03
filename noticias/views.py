@@ -78,24 +78,37 @@ class NoticiaView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     def put(self, request, pk):
         if not es_admin_o_super(request.user):
-            return Response({"detail": "No autorizado."}, status=status.HTTP_403_FORBIDDEN)
+            return Response({"detail": "No autorizado."}, status=403)
 
         noticia = get_object_or_404(Noticia, pk=pk)
         data = request.data.copy()
+
         picture_file = request.FILES.get('picture')
         if picture_file:
-            resultado = upload(picture_file, folder="noticias")
-            data['picture'] = resultado.get('secure_url')
+            try:
+                cloudinary.config(
+                    cloud_name=settings.CLOUDINARY_STORAGE['CLOUD_NAME'],
+                    api_key=settings.CLOUDINARY_STORAGE['API_KEY'],
+                    api_secret=settings.CLOUDINARY_STORAGE['API_SECRET'],
+                    secure=True
+                )
 
-        if isinstance(data.get('tags'), str):
-            data['tags'] = json.loads(data['tags'])
-
+                resultado = upload(
+                    picture_file,
+                    folder="noticias",
+                    use_filename=True,
+                    unique_filename=False
+                )
+                data['picture'] = resultado.get('secure_url')
+            except Exception as e:
+                return Response({"error": str(e)}, status=400)
+        
         serializer = NoticiaSerializer(noticia, data=data, partial=True)
         if serializer.is_valid():
             serializer.save(updatedBy=request.user)
             return Response(serializer.data)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=400)
 
     def delete(self, request, pk):
         if not es_admin_o_super(request.user):
