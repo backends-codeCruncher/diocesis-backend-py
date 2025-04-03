@@ -7,8 +7,8 @@ from rest_framework.pagination import PageNumberPagination
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.contrib.auth.hashers import make_password
-from .models import Usuario
-from .serializers import UsuarioSerializer
+from usuarios.models import Usuario
+from usuarios.serializers import UsuarioSerializer
 
 # 🔹 Permiso común
 def es_admin_o_super(user):
@@ -52,18 +52,30 @@ class UsuarioAPIView(APIView):
             return Response({"detail": "No tienes permisos para crear usuarios."}, status=403)
 
         data = request.data
+
+        # Validación para evitar que admin cree super
         if request.user.role == 'admin' and data.get('role') == 'super':
             return Response({"detail": "Un admin no puede crear usuarios con rol 'super'."}, status=403)
 
         if Usuario.objects.filter(username=data.get('username')).exists():
             return Response({"error": "El nombre de usuario ya está registrado."}, status=400)
 
-        data['password'] = make_password(data.get('password'))
-        serializer = UsuarioSerializer(data=data, context={'request': request})
-        if serializer.is_valid():
-            serializer.save(updatedBy=request.user)
+        try:
+            # ✅ Crear usuario usando el manager
+            user = Usuario.objects.create_user(
+                username=data.get('username'),
+                email=data.get('email'),
+                password=data.get('password'),
+                role=data.get('role')
+            )
+            user.updatedBy = request.user
+            user.save()
+
+            serializer = UsuarioSerializer(user, context={'request': request})
             return Response({"mensaje": "Usuario creado correctamente", "data": serializer.data}, status=201)
-        return Response(serializer.errors, status=400)
+
+        except Exception as e:
+            return Response({"error": f"Error al crear el usuario: {str(e)}"}, status=400)
 
     def put(self, request, pk=None):
         if not pk:
@@ -109,11 +121,14 @@ class HabilitarUsuarioView(APIView):
 
         if usuario.role == 'super' and request.user.role == 'admin':
             return Response({"error": "No puedes modificar el estado de un superusuario."}, status=403)
+        nuevo_estado = not usuario.isActive
 
-        usuario.isActive = not usuario.isActive
+
+        usuario.isActive = nuevo_estado
+        usuario.is_active = nuevo_estado  # ✅ Esto es clave para JWT
         usuario.updatedBy = request.user
-        usuario.deletedBy = request.user if not usuario.isActive else None
-        usuario.deletedAt = timezone.now() if not usuario.isActive else None
+        usuario.deletedBy = request.user if not nuevo_estado else None
+        usuario.deletedAt = timezone.now() if not nuevo_estado else None
         usuario.save()
 
         estado = "activado" if usuario.isActive else "desactivado"

@@ -13,7 +13,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
             'isActive', 'createdAt', 'updatedAt', 'deletedAt',
             'updatedBy', 'deletedBy'
         ]
-        read_only_fields = ['id', 'createdAt', 'updatedAt', 'deletedAt', 'updatedBy', 'deletedBy']
+        read_only_fields = ['id', 'isActive', 'createdAt', 'updatedAt', 'deletedAt', 'updatedBy', 'deletedBy']
 
     def create(self, validated_data):
         password = validated_data.pop('password')

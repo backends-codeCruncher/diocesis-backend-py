@@ -11,6 +11,10 @@ ROLE_CHOICES = (
 class UsuarioManager(BaseUserManager):
     def create_user(self, username, email, password=None, role='user', **extra_fields):
         email = self.normalize_email(email)
+
+        extra_fields.setdefault('is_active', True)
+        extra_fields.setdefault('isActive', True)
+
         user = self.model(username=username, email=email, role=role, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
@@ -20,6 +24,8 @@ class UsuarioManager(BaseUserManager):
         extra_fields.setdefault('role', 'super')
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_active', True)
+        extra_fields.setdefault('isActive', True)
         return self.create_user(username, email, password, **extra_fields)
 
 class Usuario(AbstractBaseUser, PermissionsMixin, BaseModel):
@@ -27,6 +33,9 @@ class Usuario(AbstractBaseUser, PermissionsMixin, BaseModel):
     email = models.EmailField(unique=True)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='user')
     is_staff = models.BooleanField(default=False)
+
+
+    is_active = models.BooleanField(default=True)
 
     objects = UsuarioManager()
 

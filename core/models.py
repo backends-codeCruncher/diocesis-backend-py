@@ -26,3 +26,7 @@ class BaseModel(models.Model):
 
     class Meta:
         abstract = True
+
+
+    def is_active(self):
+        return self.isActive
