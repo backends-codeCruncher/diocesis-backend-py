@@ -30,8 +30,6 @@ class UsuarioAPIView(APIView):
             serializer = UsuarioSerializer(usuario)
             return Response(serializer.data)
 
-        if not es_admin_o_super(request.user):
-            return Response({"detail": "No tienes permisos."}, status=403)
 
         queryset = Usuario.objects.exclude(id=request.user.id).order_by('username')
         username = request.query_params.get('username')

@@ -96,7 +96,8 @@ requirements.txt
    - En **CMD**:
 
      ```
-     set DJANGO_ENV=prod
+     set DJANGO_ENV=dev
+
      ```
 
 4. Aplicar migraciones y colectar archivos estáticos:
