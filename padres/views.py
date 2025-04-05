@@ -42,12 +42,20 @@ class PadreView(APIView):
 
         first_name = request.query_params.get('firstName')
         last_name = request.query_params.get('lastName')
+        birth_day = request.query_params.get('birthDay')
+        birth_month = request.query_params.get('birthMonth')
 
         if first_name:
             queryset = queryset.filter(firstName__icontains=first_name)
         if last_name:
             queryset = queryset.filter(lastName__icontains=last_name)
-
+        if birth_day and birth_month:
+            queryset = queryset.filter(birthDate__day=birth_day, birthDate__month=birth_month)
+        elif birth_day:
+            queryset = queryset.filter(birthDate__day=birth_day)
+        elif birth_month:
+            queryset = queryset.filter(birthDate__month=birth_month)
+            
         paginator = CustomPageNumberPagination()
         page = paginator.paginate_queryset(queryset, request)
         serializer = PadreSerializer(page, many=True)
