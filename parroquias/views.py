@@ -59,43 +59,50 @@ class ParroquiaView(APIView):
 
         data = request.data.copy()
         picture_file = request.FILES.get('picture')
-
         if picture_file:
-            try:
-                cloudinary.config(
-                    cloud_name=settings.CLOUDINARY_STORAGE['CLOUD_NAME'],
-                    api_key=settings.CLOUDINARY_STORAGE['API_KEY'],
-                    api_secret=settings.CLOUDINARY_STORAGE['API_SECRET'],
-                    secure=True
-                )
-
-                resultado = upload(
-                    picture_file,
-                    folder="fotosParroquias",
-                    use_filename=True,
-                    unique_filename=False
-                )
-                data['picture'] = resultado.get('secure_url')
-            except Exception as e:
-                return Response({"error": str(e)}, status=400)
+            cloudinary.config(
+                cloud_name=settings.CLOUDINARY_STORAGE['CLOUD_NAME'],
+                api_key=settings.CLOUDINARY_STORAGE['API_KEY'],
+                api_secret=settings.CLOUDINARY_STORAGE['API_SECRET'],
+                secure=True
+            )
+            resultado = upload(picture_file, folder="parroquia")
+            data['picture'] = resultado.get('secure_url')
 
         serializer = ParroquiaSerializer(data=data)
         if serializer.is_valid():
             serializer.save(createdBy=request.user, isActive=True)
             return Response(serializer.data, status=201)
-
+        
         return Response(serializer.errors, status=400)
 
     def put(self, request, pk):
         if not es_admin_o_super(request.user):
             return Response({"detail": "No autorizado."}, status=status.HTTP_403_FORBIDDEN)
+        if not pk:
+                return Response({"error": "Se requiere el ID de la parroquia."}, status=400)
 
         parroquia = get_object_or_404(Parroquia, pk=pk)
-        serializer = ParroquiaSerializer(parroquia, data=request.data, partial=True)
+        data = request.data.copy()
+
+        # 📷 Subida de nueva imagen (si viene)
+        picture_file = request.FILES.get('picture')
+        if picture_file:
+            cloudinary.config(
+                cloud_name=settings.CLOUDINARY_STORAGE['CLOUD_NAME'],
+                api_key=settings.CLOUDINARY_STORAGE['API_KEY'],
+                api_secret=settings.CLOUDINARY_STORAGE['API_SECRET'],
+                secure=True
+            )
+            resultado = upload(picture_file, folder="parroquia")
+            data['picture'] = resultado.get('secure_url')
+
+        serializer = ParroquiaSerializer(parroquia, data=data, partial=True)
         if serializer.is_valid():
             serializer.save(updatedBy=request.user)
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.data, status=200)
+        
+        return Response(serializer.errors, status=400)
 
     def delete(self, request, pk):
         if not es_admin_o_super(request.user):
