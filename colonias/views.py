@@ -43,7 +43,7 @@ class ColoniaView(APIView):
 
         paginator = CustomPageNumberPagination()
         page = paginator.paginate_queryset(queryset, request)
-        serializer = ColoniaSerializer(queryset, many=True)
+        serializer = ColoniaSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
 
     def post(self, request):
