@@ -138,8 +138,6 @@ class DocumentoView(APIView):
         if serializer.is_valid():
             serializer.save(updatedBy=request.user)
             return Response(serializer.data)
-        print(serializer.errors)
-        print(serializer)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):

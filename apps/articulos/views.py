@@ -67,17 +67,11 @@ class ArticuloView(APIView):
         articulo = get_object_or_404(Articulo, pk=pk)
         data = request.data.copy()
 
-        tags_raw = data.get('tags')
-        try:
-            data['tags'] = json.loads(tags_raw) if tags_raw else []
-        except Exception:
-            return Response({"tags": ["Value must be valid JSON."]}, status=400)
-
         serializer = ArticuloSerializer(articulo, data=data, partial=True)
         if serializer.is_valid():
             serializer.save(updatedBy=request.user)
             return Response(serializer.data)
-
+        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
