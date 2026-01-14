@@ -34,12 +34,30 @@ class ColoniaView(APIView):
             serializer = ColoniaSerializer(colonia)
             return Response(serializer.data)
 
-        queryset = Colonia.objects.filter(isActive=True).order_by('-createdAt')
+        queryset = Colonia.objects.all().order_by('-createdAt')
 
         # Filtro por nombre
         name = request.query_params.get('name')
+        is_active_param = request.query_params.get('isActive')
+
+        if is_active_param is None or is_active_param == '':
+            is_active = None
+        elif is_active_param.lower() == 'true':
+            is_active = True
+        elif is_active_param.lower() == 'false':
+            is_active = False
+        else:
+            is_active = None
+            
         if name:
             queryset = queryset.filter(name__icontains=name)
+
+        if is_active is None:
+            pass
+        elif is_active is True:
+            queryset = queryset.filter(isActive=True)
+        elif is_active is False:
+            queryset = queryset.filter(isActive=False)
 
         paginator = CustomPageNumberPagination()
         page = paginator.paginate_queryset(queryset, request)
