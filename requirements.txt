@@ -20,7 +20,7 @@ mccabe==0.7.0
 packaging==24.2
 pillow==11.1.0
 platformdirs==4.3.7
-psycopg2-binary==2.9.10
+psycopg2-binary>=2.9.10
 PyJWT==2.9.0
 pylint==3.3.6
 pylint-celery==0.3
