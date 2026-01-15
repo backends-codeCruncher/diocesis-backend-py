@@ -58,8 +58,11 @@ class PadreView(APIView):
             
         paginator = CustomPageNumberPagination()
         page = paginator.paginate_queryset(queryset, request)
-        serializer = PadreSerializer(page, many=True)
-        return paginator.get_paginated_response(serializer.data)
+        if page is not None:
+            serializer = PadreSerializer(page, many=True)
+            return paginator.get_paginated_response(serializer.data)
+        serializer = PadreSerializer(queryset, many=True)
+        return Response(serializer.data)
 
     def post(self, request):
         if not es_admin_o_super(request.user):
@@ -70,7 +73,6 @@ class PadreView(APIView):
 
         if picture_file:
             try:
-                # ✅ Configurar Cloudinary antes de usarlo
                 cloudinary.config(
                     cloud_name=settings.CLOUDINARY_STORAGE['CLOUD_NAME'],
                     api_key=settings.CLOUDINARY_STORAGE['API_KEY'],
@@ -87,6 +89,7 @@ class PadreView(APIView):
                 data['picture'] = resultado.get('secure_url')
 
             except Exception as e:
+                print(e)
                 return Response({"error": str(e)}, status=400)
 
         serializer = PadreSerializer(data=data)
@@ -94,6 +97,7 @@ class PadreView(APIView):
             serializer.save(isActive=True)
             return Response(serializer.data, status=201)
 
+        print(serializer.errors)
         return Response(serializer.errors, status=400)
 
     def put(self, request, pk):
