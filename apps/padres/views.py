@@ -41,6 +41,10 @@ class PadreView(APIView):
 
         queryset = Padre.objects.all().order_by('-createdAt')
 
+        is_active = request.query_params.get('isActive')
+        if is_active is not None:
+            queryset = queryset.filter(isActive=is_active.lower() == 'true')
+
         first_name = request.query_params.get('firstName')
         last_name = request.query_params.get('lastName')
         birth_day = request.query_params.get('birthDay')
