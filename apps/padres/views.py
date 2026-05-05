@@ -17,6 +17,7 @@ from cloudinary.uploader import upload
 def es_admin_o_super(user):
     return user.is_authenticated and user.role in ['admin', 'super']
 
+
 class CustomPageNumberPagination(PageNumberPagination):
     page_size = 10
     page_size_query_param = 'page_size'
@@ -31,7 +32,7 @@ class PadreView(APIView):
         if self.request.method == 'GET':
             return [AllowAny()]
         return [IsAuthenticated()]
-    
+
     def get(self, request, pk=None):
         if pk:
             padre = get_object_or_404(Padre, pk=pk)
@@ -50,17 +51,20 @@ class PadreView(APIView):
         if last_name:
             queryset = queryset.filter(lastName__icontains=last_name)
         if birth_day and birth_month:
-            queryset = queryset.filter(birthDate__day=birth_day, birthDate__month=birth_month)
+            queryset = queryset.filter(
+                birthDate__day=birth_day, birthDate__month=birth_month)
         elif birth_day:
             queryset = queryset.filter(birthDate__day=birth_day)
         elif birth_month:
             queryset = queryset.filter(birthDate__month=birth_month)
-            
-        paginator = CustomPageNumberPagination()
-        page = paginator.paginate_queryset(queryset, request)
-        if page is not None:
-            serializer = PadreSerializer(page, many=True)
-            return paginator.get_paginated_response(serializer.data)
+
+        if 'page' in request.query_params or 'page_size' in request.query_params:
+            paginator = CustomPageNumberPagination()
+            page = paginator.paginate_queryset(queryset, request)
+            if page is not None:
+                serializer = PadreSerializer(page, many=True)
+                return paginator.get_paginated_response(serializer.data)
+
         serializer = PadreSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -149,12 +153,14 @@ class CargarPadresPorCSV(APIView):
             serializer = PadreSerializer(data=fila)
             if serializer.is_valid():
                 serializer.save()
-                creados.append(f"{fila.get('firstName')} {fila.get('lastName')}")
+                creados.append(
+                    f"{fila.get('firstName')} {fila.get('lastName')}")
             else:
-                errores.append({f"{fila.get('firstName')} {fila.get('lastName')}": serializer.errors})
+                errores.append(
+                    {f"{fila.get('firstName')} {fila.get('lastName')}": serializer.errors})
 
         return Response({"creados": creados, "errores": errores}, status=status.HTTP_200_OK)
-    
+
 
 class HabilitarPadreView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -168,4 +174,3 @@ class HabilitarPadreView(APIView):
         padre.updatedBy = request.user
         padre.save()
         return Response({"detail": "Padre habilitado correctamente."}, status=status.HTTP_200_OK)
-    
