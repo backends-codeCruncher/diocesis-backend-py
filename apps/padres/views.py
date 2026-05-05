@@ -39,7 +39,7 @@ class PadreView(APIView):
             serializer = PadreSerializer(padre)
             return Response(serializer.data)
 
-        queryset = Padre.objects.all().order_by('-createdAt')
+        queryset = Padre.objects.all().order_by('firstName', 'lastName')
 
         is_active = request.query_params.get('isActive')
         if is_active is not None:
